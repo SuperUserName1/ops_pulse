@@ -9,7 +9,15 @@ OPENAPI_TAGS = [
     {
         "name": "health",
         "description": "Liveness/readiness checks and basic service metadata.",
-    }
+    },
+    {
+        "name": "auth",
+        "description": "Authentication, token refresh rotation, and role-aware user context.",
+    },
+    {
+        "name": "users",
+        "description": "User directory endpoints with standard pagination and filters.",
+    },
 ]
 
 
@@ -28,7 +36,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(RequestIdMiddleware)
     register_exception_handlers(app)
-    app.include_router(api_v1_router, prefix="/api/v1")
+    app.include_router(api_v1_router, prefix="/v1")
 
     return app
 

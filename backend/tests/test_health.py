@@ -8,7 +8,7 @@ from app.main import app
 async def test_health_endpoint_returns_expected_payload() -> None:
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
-        response = await client.get("/api/v1/health", headers={"X-Request-ID": "req-test-1"})
+        response = await client.get("/v1/health", headers={"X-Request-ID": "req-test-1"})
 
     assert response.status_code == 200
     assert response.headers["x-request-id"] == "req-test-1"
@@ -26,7 +26,7 @@ async def test_health_endpoint_returns_expected_payload() -> None:
 async def test_not_found_returns_unified_error_schema() -> None:
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://testserver") as client:
-        response = await client.get("/api/v1/does-not-exist")
+        response = await client.get("/v1/does-not-exist")
 
     assert response.status_code == 404
     assert "x-request-id" in response.headers

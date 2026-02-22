@@ -1,6 +1,9 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
 
 from app.core.deps import RequestIdDep, SettingsDep
+from app.core.rate_limit import rate_limit_dependency
 from app.schemas.health import HealthResponse
 from app.services.health import build_health_response
 
@@ -31,5 +34,9 @@ _HEALTH_EXAMPLE = {
         }
     },
 )
-async def get_health(request_id: RequestIdDep, settings: SettingsDep) -> HealthResponse:
+async def get_health(
+    request_id: RequestIdDep,
+    settings: SettingsDep,
+    _: Annotated[None, Depends(rate_limit_dependency("public_health", fail_closed=True))],
+) -> HealthResponse:
     return build_health_response(request_id=request_id, settings=settings)
