@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import { getCurrentUser, login as loginRequest, logout as logoutRequest } from "@/api/auth";
 import { registerAuthFailureHandler } from "@/api/http";
+import { getApiErrorMessage } from "@/shared/lib/api-error";
 import { tokenStorage } from "@/shared/lib/token-storage";
 import type { User } from "@/shared/types/auth";
 
@@ -18,31 +19,6 @@ type AuthStore = {
   logout: () => Promise<void>;
   clearSession: () => void;
 };
-
-function normalizeApiError(error: unknown): string {
-  if (typeof error === "object" && error !== null) {
-    const candidate = error as {
-      response?: { data?: { detail?: { message?: string } | string } };
-      message?: string;
-    };
-
-    const detail = candidate.response?.data?.detail;
-    if (typeof detail === "string") {
-      return detail;
-    }
-    if (detail && typeof detail === "object" && "message" in detail) {
-      const message = detail.message;
-      if (typeof message === "string" && message.trim()) {
-        return message;
-      }
-    }
-    if (typeof candidate.message === "string" && candidate.message.trim()) {
-      return candidate.message;
-    }
-  }
-
-  return "Request failed.";
-}
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
@@ -109,7 +85,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         user: null,
         authStatus: "anonymous",
         isSubmitting: false,
-        errorMessage: normalizeApiError(error),
+        errorMessage: getApiErrorMessage(error),
       });
       throw error;
     }

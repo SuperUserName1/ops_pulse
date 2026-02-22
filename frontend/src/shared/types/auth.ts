@@ -23,3 +23,10 @@ export type TokenPairResponse = {
 export type CurrentUserResponse = {
   user: User;
 };
+
+export type UsersListResponse = {
+  items: User[];
+  total: number;
+  limit: number;
+  offset: number;
+};

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useAuthStore } from "@/features/auth/model/auth-store";
@@ -22,10 +22,8 @@ export function LoginPage() {
     password: "admin123",
   });
 
-  const redirectTo = useMemo(() => {
-    const from = location.state as { from?: string } | null;
-    return from?.from || "/app/profile";
-  }, [location.state]);
+  const from = location.state as { from?: string } | null;
+  const redirectTo = from?.from || "/app/dashboard";
 
   useEffect(() => {
     if (!isBootstrapping && authStatus === "authenticated") {
@@ -60,7 +58,7 @@ export function LoginPage() {
               <strong>Refresh flow:</strong> automatic retry on <code>401</code> via <code>/auth/refresh</code>
             </li>
             <li>
-              <strong>Roles:</strong> admin / agent / viewer
+              <strong>Ops UI:</strong> dashboard, tasks CRUD, users directory (admin), profile
             </li>
           </ul>
         </section>
@@ -112,6 +110,7 @@ export function LoginPage() {
             Demo users:
             <br />
             <code>admin / admin123</code>, <code>agent / agent123</code>,{" "}
+            <code>viewer / viewer123</code>, <code>ops-bot / agent123</code>,{" "}
             <code>auditor / viewer123</code>
           </div>
         </section>

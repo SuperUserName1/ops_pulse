@@ -8,8 +8,11 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import { DashboardPage } from "@/pages/dashboard/DashboardPage";
 import { LoginPage } from "@/pages/login/LoginPage";
 import { ProfilePage } from "@/pages/profile/ProfilePage";
+import { TasksPage } from "@/pages/tasks/TasksPage";
+import { UsersPage } from "@/pages/users/UsersPage";
 import { useAuthStore } from "@/features/auth/model/auth-store";
 
 function ProtectedRoute() {
@@ -52,7 +55,18 @@ function AppLayout() {
           <h1>Control Panel</h1>
         </div>
         <nav className="nav-list" aria-label="Main navigation">
-          <NavLink className="nav-link" to="/app/profile">
+          <NavLink className={navLinkClassName} to="/app/dashboard">
+            Dashboard
+          </NavLink>
+          <NavLink className={navLinkClassName} to="/app/tasks">
+            Tasks
+          </NavLink>
+          {user?.role === "admin" ? (
+            <NavLink className={navLinkClassName} to="/app/users">
+              Users
+            </NavLink>
+          ) : null}
+          <NavLink className={navLinkClassName} to="/app/profile">
             Profile
           </NavLink>
         </nav>
@@ -78,7 +92,7 @@ function AppLayout() {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate replace to="/app/profile" />,
+    element: <Navigate replace to="/app/dashboard" />,
   },
   {
     path: "/login",
@@ -93,7 +107,19 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate replace to="profile" />,
+            element: <Navigate replace to="dashboard" />,
+          },
+          {
+            path: "dashboard",
+            element: <DashboardPage />,
+          },
+          {
+            path: "tasks",
+            element: <TasksPage />,
+          },
+          {
+            path: "users",
+            element: <UsersPage />,
           },
           {
             path: "profile",
@@ -107,4 +133,8 @@ const router = createBrowserRouter([
 
 export function AppRouter() {
   return <RouterProvider router={router} />;
+}
+
+function navLinkClassName({ isActive }: { isActive: boolean }) {
+  return isActive ? "nav-link is-active" : "nav-link";
 }
