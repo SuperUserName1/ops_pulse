@@ -18,6 +18,16 @@ OPENAPI_TAGS = [
         "name": "users",
         "description": "User directory endpoints with standard pagination and filters.",
     },
+    {
+        "name": "tasks",
+        "description": (
+            "Tenant-scoped task CRUD endpoints with pagination, filters, and assignee support."
+        ),
+    },
+    {
+        "name": "dashboard",
+        "description": "Aggregated tenant metrics for the ops dashboard UI.",
+    },
 ]
 
 

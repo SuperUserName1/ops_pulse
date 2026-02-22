@@ -189,6 +189,9 @@ class AuthService:
     def get_user_by_id(self, user_id: str) -> UserRecord | None:
         return self._users_by_id.get(user_id)
 
+    def list_user_records(self) -> list[UserRecord]:
+        return list(self._users_by_id.values())
+
     def _validate_password(self, user: UserRecord, password: str) -> bool:
         candidate_hash = _hash_password(password, user.password_salt)
         return secrets.compare_digest(candidate_hash, user.password_hash)
