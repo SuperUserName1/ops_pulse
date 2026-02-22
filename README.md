@@ -16,18 +16,21 @@ Production-ready шаблон репозитория с backend на FastAPI и 
 
 - `GET /v1/health` — health endpoint
 - `auth` demo API (`/v1/auth/*`) с JWT access/refresh token flow
-- frontend login/profile UI с автологином по токенам и авто-refresh на `401`
-- PostgreSQL схема для tenant-данных (`organizations`, `users`, `tasks`)
+- `dashboard` API (`/v1/dashboard/summary`) и frontend dashboard экран
+- `tasks` API (`/v1/tasks*`) и frontend CRUD-интерфейс задач (create/list/update/delete)
+- `users` directory API (`/v1/auth/users`) и frontend экран списка пользователей (admin-only)
+- frontend login/protected routes/profile UI с автологином по токенам и авто-refresh на `401`
+- PostgreSQL схема для tenant-данных (`organizations`, `users`, `tasks`) + runtime работа backend с БД
 
 Важно:
 - текущий `AuthService` в MVP использует in-memory demo пользователей (для демонстрации auth-flow)
-- PostgreSQL уже подключается backend-ом и используется для миграций/схемы данных
-- следующий шаг для product-функций: перевести сервисы (`auth/users/tasks`) на `SQLAlchemy` и `DbSessionDep`
+- backend синхронизирует demo directory в PostgreSQL (чтобы `tasks` и `dashboard` работали с реальными таблицами)
+- следующим production-шагом логично сделать auth source of truth в PostgreSQL (вместо in-memory demo auth)
 
 ## Структура
 
 - `backend/` — FastAPI backend (async SQLAlchemy, настройки, middleware, тесты)
-- `frontend/` — React/Vite frontend (login, protected routes, profile page)
+- `frontend/` — React/Vite frontend (login, dashboard, tasks CRUD, users directory, profile)
 - `.github/` — PR template + issue templates
 
 ## Как Работать С Проектом (Коротко)
@@ -38,6 +41,7 @@ Production-ready шаблон репозитория с backend на FastAPI и 
 4. Запустить backend (`uvicorn app.main:app --reload`)
 5. Запустить frontend (`pnpm dev`)
 6. Открыть UI и войти demo-пользователем (`admin / admin123`)
+7. Проверить страницы: `Dashboard`, `Tasks`, `Users` (для admin), `Profile`
 
 ## Быстрый старт (backend)
 
@@ -79,6 +83,13 @@ cd frontend
 pnpm dev
 ```
 
+Полезно для проверки production-сборки frontend:
+
+```bash
+cd frontend
+pnpm build
+```
+
 ### Lint
 
 ```bash
@@ -106,6 +117,16 @@ Frontend:
 # тесты еще не добавлены (есть lint/typecheck)
 cd frontend
 pnpm typecheck
+```
+
+Интеграционные backend тесты c PostgreSQL test DB:
+
+```bash
+PGPASSWORD=<password> psql -h 127.0.0.1 -U postgres -d postgres -c \
+  "CREATE DATABASE ops_pulse_test WITH OWNER postgres ENCODING 'UTF8';"
+
+cd backend
+OPS_PULSE_TEST_DATABASE_URL=postgresql+asyncpg://postgres:<password>@127.0.0.1:5432/ops_pulse_test pytest
 ```
 
 ### Typecheck
@@ -169,6 +190,20 @@ Tenant-модель:
 - работы с задачами/тикетами/операционными сущностями
 - безопасной аутентификации и разграничения ролей (`admin`, `agent`, `viewer`)
 - дальнейшего роста в полноценную internal-platform/API
+
+### Роли И Доступ (текущая реализация)
+
+- `admin` — доступ к dashboard, tasks CRUD, users directory, profile
+- `agent` — доступ к dashboard, tasks create/update, profile
+- `viewer` — read-only доступ к dashboard/tasks/profile (users directory закрыт)
+
+### Demo Пользователи Для Локальной Проверки
+
+- `admin / admin123` (`org-acme`, `admin`)
+- `agent / agent123` (`org-acme`, `agent`)
+- `viewer / viewer123` (`org-acme`, `viewer`)
+- `ops-bot / agent123` (`org-beta`, `agent`)
+- `auditor / viewer123` (`org-beta`, `viewer`)
 
 Этот репозиторий удобен как "скелет" для новых фич:
 - добавляете новые endpoints в `backend/app/api/v1/endpoints/`
