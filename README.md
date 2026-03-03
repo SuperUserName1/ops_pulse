@@ -4,6 +4,12 @@ Production-ready шаблон репозитория с backend на FastAPI и 
 
 ## Что Это За Проект
 
+Графический интерфейс веб-приложения:
+<img width="1916" height="1005" alt="image" src="https://github.com/user-attachments/assets/49d1de05-d3e9-402a-b28f-d8f67dccf5ca" />
+
+Схема Backend части приложения:
+<img width="1916" height="1005" alt="image" src="https://github.com/user-attachments/assets/b3cf023b-d38f-4e20-b10e-82d94aefd2f9" />
+
 `Ops Pulse` — это шаблон/заготовка для внутреннего операционного сервиса (control panel / ops dashboard).
 Он нужен как стартовая база для командной разработки backend + frontend без "пустого" репозитория:
 
